@@ -1,0 +1,3 @@
+/target
+.pgdata/
+tailwind/node_modules

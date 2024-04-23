@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form hx-post="/" hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
+    class="w-fit mx-auto flex flex-col gap-8">
+    <div class="flex flex-col gap-2">
+        <label class="label" for="url">
+            Paste the URL to be shortened
+        </label>
+        <input type="text" id="url" name="url" placeholder="Enter the link here…"
+            class="input input-bordered input-primary" autofocus />
+    </div>
+    <button type="submit" class="btn btn-primary text-white">
+        Shorten URL
+    </button>
+</form>
+
+{% include "url.html" %}
+
+{% endblock content %}

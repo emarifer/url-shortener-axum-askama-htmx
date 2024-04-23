@@ -1,0 +1,21 @@
+<div class="w-fit mx-auto mt-6 flex flex-col gap-2">
+    <div class="flex items-center w-fit mx-auto relative">
+        <p class="mr-2">Shortened URL</p>
+        <button hx-on:click="htmx.find('#url').focus()" title="Copy short url" class="cursor-pointer" _="on click get the innerText of the #shortened-url
+                    then writeText(the result) with the navigator's clipboard
+                    put '✓ Copied&nbsp;!' into the next <output/>
+                    wait 3s put '' into the next <output/> then put '' into #shortened-url">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="slategrey" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                    d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z">
+                </path>
+            </svg>
+        </button>
+        <output class="text-green-500 text-xs font-semibold absolute -right-16"></output>
+    </div>
+    <div id="shortened-url" class="text-cyan-600 font-semibold"></div>
+</div>
+
+<!-- 
+https://www.reddit.com/r/htmx/comments/171voi1/htmx_focus_element_non_javascript/ 
+-->
