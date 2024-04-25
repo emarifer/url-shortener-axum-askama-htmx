@@ -1,0 +1,10 @@
+<div>
+    {% if datetime != "" %}
+    <p id="url-result" class="text-cyan-600 font-semibold">{{ url }} </p>
+    <p class="text-lime-500 text-xs mt-2">{{ datetime }} </p>
+    {% else %}
+    <p class="text-red-600 font-light text-sm text-wrap text-center w-96">
+        {{ url }}
+    </p>
+    {% endif %}
+</div>

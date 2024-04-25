@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="google" content="notranslate" />
     <meta name="description" content="A Rust URL Shortener App">
-    <title>Shortify - A Rust URL Shortener App</title>
+    <title>Shortify | {{ title }}</title>
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="shortcut icon" href="/assets/img/favicon.png" type="image/png">
     <script src="/assets/js/htmx.min.js"></script>
@@ -15,13 +15,11 @@
 </head>
 
 <body hx-boost="true">
-    <main class="mt-24" id="content">
-        <h1 class="text-center text-2xl font-bold text-primary mb-12">
-            Rust URL Shortener App
-        </h1>
-
+    <main id="content">
         {% block content %}{% endblock content %}
     </main>
+
+    {% include "partials/footer.html" %}
 </body>
 
 </html>

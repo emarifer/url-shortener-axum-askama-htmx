@@ -3,8 +3,8 @@ use std::sync::Arc;
 use askama::Template;
 use axum::{
     extract::{Host, Path, State},
-    http::StatusCode,
-    response::{Html, IntoResponse, Response},
+    http::{HeaderMap, StatusCode},
+    response::{Html, IntoResponse, Redirect, Response},
     Form,
 };
 use serde::Deserialize;
@@ -12,7 +12,7 @@ use tokio::sync::RwLock;
 use url::Url;
 
 use super::{
-    service::{resolve_short_url, shorten_url},
+    service::{convert_datetime, resolve_short_url, shorten_url},
     AppState,
 };
 
@@ -29,56 +29,80 @@ pub struct FormData {
 pub async fn get_url(
     State(state): State<Arc<RwLock<AppState>>>,
     Path(url): Path<String>,
-) -> Response<String> {
+) -> impl IntoResponse {
     // Attempt to resolve the short URL to its corresponding long URL
     match resolve_short_url(&state.read().await.db, url).await {
-        Ok(result) => Response::builder()
-            // If resolution is successful, construct a response
-            // indicating a permanent redirect (status code 301)
-            // Set the 'Location' header to the resolved long URL
-            // and provide a body with a redirection message
-            .status(StatusCode::MOVED_PERMANENTLY)
-            .header("LOCATION", result)
-            .body("Redirecting…".to_string())
-            .unwrap(),
-        Err(_err) => Response::builder()
-            // If an error occurs during resolution, construct
-            // a response with a '404 Not Found' status code
-            // Include the error message in the response body
-            // to indicate the failure
-            .status(StatusCode::NOT_FOUND)
-            .body("Sorry your short URL does not exist!".to_string())
-            .unwrap(),
+        Ok(result) => Redirect::to(&result).into_response(),
+        Err(_err) => Redirect::to("/404").into_response(),
     }
 }
+
 /// Handler to respond to `POST` requests and generate,
 /// if possible, a short `URL`.
 pub async fn post_url(
+    headers: HeaderMap,
     Host(hostname): Host, // See note below
     State(state): State<Arc<RwLock<AppState>>>,
     Form(form_data): Form<FormData>,
-) -> Html<String> {
+) -> impl IntoResponse {
     // println!("{hostname}");
+    // println!("{:?}", headers["x-timezone"]);
     // Check if the provided URL is valid
     if Url::parse(&form_data.url).is_ok() {
         // Generate url random part
         match shorten_url(&state.write().await.db, form_data.url).await {
-            Ok(result) => Html(format!("{}/{}", hostname, result)),
-            Err(err) => Html(format!("Something went wrong: {}", err)),
+            Ok(result) => HtmlTemplate(ResultTemplate {
+                url: format!("{}/{}", hostname, result.id),
+                datetime: convert_datetime(
+                    headers["x-timezone"].to_str().unwrap(),
+                    result.created_at,
+                ),
+            }),
+            Err(err) => HtmlTemplate(ResultTemplate {
+                url: format!("Something went wrong: {}", err),
+                datetime: String::default(),
+            }),
         }
     } else {
-        Html("This is not a valid URL".to_string())
+        HtmlTemplate(ResultTemplate {
+            url: "This is not a valid URL".to_string(),
+            datetime: String::default(),
+        })
     }
+}
+
+/// Handler 404 Error.
+pub async fn handler_404() -> impl IntoResponse {
+    HtmlTemplate(ErrTemplate {
+        title: "Error 404".to_string(),
+    })
+}
+
+#[derive(Template)]
+#[template(path = "404.html")]
+struct ErrTemplate {
+    title: String,
 }
 
 /// Handler to serve the application template.
 pub async fn app() -> impl IntoResponse {
-    HtmlTemplate(AppTemplate)
+    HtmlTemplate(AppTemplate {
+        title: "A Rust URL Shortener App".to_string(),
+    })
 }
 
 #[derive(Template)]
 #[template(path = "app.html")]
-struct AppTemplate;
+struct AppTemplate {
+    title: String,
+}
+
+#[derive(Template)]
+#[template(path = "partials/result.html")]
+struct ResultTemplate {
+    url: String,
+    datetime: String,
+}
 
 /* ***** Template Rendering ***** */
 

@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form hx-post="/" hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
+<h1 class="text-center text-2xl font-bold text-primary mt-24 mb-12">
+    Rust URL Shortener App
+</h1>
+
+<form hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}" hx-post="/"
+    hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
     class="w-fit mx-auto flex flex-col gap-8">
     <div class="flex flex-col gap-2">
         <label class="label" for="url">
@@ -15,6 +20,6 @@
     </button>
 </form>
 
-{% include "url.html" %}
+{% include "partials/url.html" %}
 
 {% endblock content %}

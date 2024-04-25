@@ -1,7 +1,7 @@
 <div class="w-fit mx-auto mt-6 flex flex-col gap-2">
     <div class="flex items-center w-fit mx-auto relative">
         <p class="mr-2">Shortened URL</p>
-        <button hx-on:click="htmx.find('#url').focus()" title="Copy short url" class="cursor-pointer" _="on click get the innerText of the #shortened-url
+        <button hx-on:click="htmx.find('#url').focus()" title="Copy short url" class="cursor-pointer" _="on click get the innerText of the #url-result
                     then writeText(the result) with the navigator's clipboard
                     put '✓ Copied&nbsp;!' into the next <output/>
                     wait 3s put '' into the next <output/> then put '' into #shortened-url">
@@ -13,7 +13,7 @@
         </button>
         <output class="text-green-500 text-xs font-semibold absolute -right-16"></output>
     </div>
-    <div id="shortened-url" class="text-cyan-600 font-semibold"></div>
+    <div id="shortened-url"></div>
 </div>
 
 <!-- 

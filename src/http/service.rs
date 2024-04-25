@@ -1,4 +1,6 @@
 use anyhow::Result;
+use chrono::{offset::TimeZone, Local, NaiveDateTime};
+use chrono_tz::Tz;
 use rand::{distributions::Alphanumeric, Rng};
 use sqlx::{Error, Pool, Postgres};
 
@@ -34,7 +36,7 @@ pub async fn resolve_short_url(db: &Pool<Postgres>, url: String) -> Result<Strin
 /// Upon receiving this input, it utilizes the rand crate
 /// to generate a random 4-character base62 string
 /// (you can adjust the length as needed).
-pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<String, Error> {
+pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<Url, Error> {
     // Loop for a maximum number of retries
     for _ in 0..MAX_RETRIES {
         let rng = rand::thread_rng();
@@ -51,16 +53,16 @@ pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<String, Err
             Url,
             r#"INSERT INTO url (id, long_url)
             VALUES ($1, $2)
-            RETURNING id, long_url;"#,
+            RETURNING *;"#,
             random_string,
             url
         )
         .fetch_one(db)
         .await
         {
-            Ok(_) => {
+            Ok(url) => {
                 // Successful insertion, return the generated random string
-                return Ok(random_string);
+                return Ok(url);
             }
             Err(err) => {
                 // Check if the error is due to a unique constraint
@@ -84,4 +86,16 @@ pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<String, Err
         std::io::ErrorKind::Other,
         "Maximum retries reached without successful insertion",
     )))
+}
+
+pub fn convert_datetime(tzone: &str, dt: NaiveDateTime) -> String {
+    let tz = tzone.parse::<Tz>().unwrap();
+    let converted = Local.from_utc_datetime(&dt);
+    let dttz = converted.with_timezone(&tz).to_rfc2822();
+
+    let chars = dttz.chars().collect::<Vec<_>>();
+    let first_part = chars[5..22].iter().collect::<String>();
+    let last_part = chars[25..].iter().collect::<String>();
+
+    format!("{}{}", first_part, last_part)
 }

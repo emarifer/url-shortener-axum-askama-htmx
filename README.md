@@ -40,9 +40,9 @@ In the implementation of this application we have used the following technologie
 
 <div align="center">
 
-###### Home page showing the shortened URL and the indicator that it has been copied to the clipboard:
+###### Home page showing the shortened URL and the indicator that it has been copied to the clipboard & 404 error handling:
 
-<img src="assets/img/screenshot.png" style="border-radius: 1rem;" width="45%" align="top">
+<img src="assets/img/screenshot-01.png" width="35%" align="top">&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/img/screenshot-02.png" width="35%">
 
 </div>
 
@@ -90,7 +90,7 @@ $ cargo watch -x run -w src -w assets -w templates
 
 > ⚠️ Since the `docker compose up -d` command creates a volume (as a hidden folder) in the project folder to store the data of the `Postgres` database and that folder requires system administrator permissions, the `cargo command watch -x run` would return an error. Therefore, we only "watch" the `src`, `assets` and `templates` folders.
 
-If you also want to modify the CSS of the templates, it will be useful to activate the `watch` mode of Tailwindcss, executing the command inside the `tailwind` folder:
+If you also want to modify the CSS of the templates, it will be useful to activate the `watch` mode of Tailwindcss, executing the command inside the `tailwind` folder (you need to have `Node.js` installed):
 
 ```
 $ npm run watch-css # minify for production: npm run build-css-prod
