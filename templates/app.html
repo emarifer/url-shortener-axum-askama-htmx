@@ -6,7 +6,7 @@
 </h1>
 
 <form hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}" hx-post="/"
-    hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
+    hx-indicator="#spinner" hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
     class="w-fit mx-auto flex flex-col gap-8">
     <div class="flex flex-col gap-2">
         <label class="label" for="url">

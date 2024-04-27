@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use anyhow::{Context, Result};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
@@ -5,6 +7,8 @@ use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 /// maximum number of connections in the connection pool to 50.
 pub async fn connect(db_url: &str) -> Result<Pool<Postgres>> {
     let db = PgPoolOptions::new()
+        // SEE NOTE BELOW
+        .acquire_timeout(Duration::from_secs(5))
         .max_connections(50)
         .connect(db_url)
         .await
@@ -14,3 +18,7 @@ pub async fn connect(db_url: &str) -> Result<Pool<Postgres>> {
 
     Ok(db)
 }
+
+/* LIMIT DATABASE CONNECTION WAITING TIME. SEE:
+https://docs.rs/sqlx/latest/sqlx/pool/struct.PoolOptions.html#method.acquire_timeout
+*/

@@ -17,6 +17,8 @@
 <body hx-boost="true">
     <main id="content">
         {% block content %}{% endblock content %}
+
+        {% include "partials/loading-indicator.html" %}
     </main>
 
     {% include "partials/footer.html" %}

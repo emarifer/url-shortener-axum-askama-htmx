@@ -61,7 +61,8 @@ pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<Url, Error>
         .await
         {
             Ok(url) => {
-                // Successful insertion, return the generated random string
+                // Successful insertion, return the object
+                // containing the generated random string
                 return Ok(url);
             }
             Err(err) => {
@@ -88,11 +89,15 @@ pub async fn shorten_url(db: &Pool<Postgres>, url: String) -> Result<Url, Error>
     )))
 }
 
+/// convert_datetime converts the datetime format from the
+/// database (UTC timestamp) to a string in RFC822Z format,
+/// taking the client's timezone (&str) and a datetime (NaiveDateTime).
 pub fn convert_datetime(tzone: &str, dt: NaiveDateTime) -> String {
     let tz = tzone.parse::<Tz>().unwrap();
     let converted = Local.from_utc_datetime(&dt);
     let dttz = converted.with_timezone(&tz).to_rfc2822();
 
+    // conversion to RFC822Z format
     let chars = dttz.chars().collect::<Vec<_>>();
     let first_part = chars[5..22].iter().collect::<String>();
     let last_part = chars[25..].iter().collect::<String>();
