@@ -66,7 +66,6 @@ fn api_router(app_state: Arc<RwLock<AppState>>) -> Router {
     Router::new()
         .route("/", get(handler::app).post(handler::post_url))
         .route("/:url", get(handler::get_url))
-        .route("/404", get(handler::handler_404))
         .nest_service(
             "/assets",
             ServeDir::new(format!("{}/assets", assets_path.to_str().unwrap())), // Serve static assets

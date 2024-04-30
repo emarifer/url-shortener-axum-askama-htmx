@@ -31,6 +31,7 @@ https://freedium.cfd/https://deid84.medium.com/crafting-a-rust-url-shortener-par
 https://freedium.cfd/https://levelup.gitconnected.com/crafting-a-rust-url-shortener-part-2-creating-apis-1753b4789816
 https://freedium.cfd/https://levelup.gitconnected.com/crafting-a-rust-url-shortener-part-3-building-frontend-33409282083f
 https://github.com/deid84/shorturl-rs
+https://joeymckenzie.tech/blog/templates-with-rust-axum-htmx-askama
 
 https://docs.rs/axum/latest/axum/
 https://docs.rs/askama/latest/askama/

@@ -10,9 +10,12 @@
             Resource not found
         </h2>
     </div>
-    <p class="text-xs text-center md:text-sm text-gray-400">
-        The requested resource could not be found but may be available again in the future.
+    <p class="text-sm text-center md:text-base text-gray-400">
+        The requested resource could not be resolved, but may become available again in the future.
     </p>
+    <span class="text-xs text-secondary font-semibold text-wrap text-center w-4/5 mb-8">
+        Reason: {{ reason }}
+    </span>
 
     <a hx-swap="transition:true" href="/" class="btn btn-secondary btn-outline">
         Go Home Page

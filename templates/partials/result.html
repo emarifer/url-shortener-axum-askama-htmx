@@ -1,10 +1,11 @@
-<div>
-    {% if datetime != "" %}
-    <p id="url-result" class="text-cyan-600 font-semibold">{{ url }} </p>
-    <p class="text-lime-500 text-xs mt-2">{{ datetime }} </p>
-    {% else %}
-    <p class="text-red-600 font-light text-sm text-wrap text-center w-96">
-        {{ url }}
-    </p>
-    {% endif %}
-</div>
+<p {% if datetime !="" %} id="url-result" class="text-cyan-600 font-semibold" {% else %}
+    class="text-red-600 font-light text-sm text-wrap text-center w-80" {% endif %}>
+    {{ url }}
+</p>
+<p {% if datetime !="" %} class="text-lime-500 text-xs mt-2" {% else %} class="hidden" {% endif %}>
+    {{ datetime }}
+</p>
+
+<!-- CONDITIONAL CSS IN JINJA2-ASKAMA. SEE:
+https://stackoverflow.com/questions/49226187/how-can-you-change-the-color-of-a-jinja2-entry-depending-on-some-condition-usi
+ -->

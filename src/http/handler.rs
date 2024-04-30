@@ -2,9 +2,10 @@ use std::sync::Arc;
 
 use askama::Template;
 use axum::{
+    body::Body,
     extract::{Host, Path, State},
     http::{HeaderMap, StatusCode},
-    response::{Html, IntoResponse, Redirect, Response},
+    response::{Html, IntoResponse, Response},
     Form,
 };
 use serde::Deserialize;
@@ -29,11 +30,31 @@ pub struct FormData {
 pub async fn get_url(
     State(state): State<Arc<RwLock<AppState>>>,
     Path(url): Path<String>,
-) -> impl IntoResponse {
+) -> Response {
     // Attempt to resolve the short URL to its corresponding long URL
     match resolve_short_url(&state.read().await.db, url).await {
-        Ok(result) => Redirect::to(&result).into_response(),
-        Err(_err) => Redirect::to("/404").into_response(),
+        Ok(result) => Response::builder()
+            // If resolution is successful, construct a response
+            // indicating a permanent redirect (status code 301)
+            // Set the 'Location' header to the resolved long URL
+            // and provide a body with a redirection message
+            .status(StatusCode::MOVED_PERMANENTLY)
+            .header("LOCATION", result)
+            .body(Body::empty())
+            .unwrap(),
+        Err(err) => {
+            // If an error occurs during resolution,
+            // create a page from an Error template
+            // that includes the error message
+            // to indicate the failure.
+            tracing::error!(%err, "request failed");
+
+            return HtmlTemplate(ErrTemplate {
+                title: "Error 404".to_string(),
+                reason: err.to_string(),
+            })
+            .into_response();
+        }
     }
 }
 
@@ -41,12 +62,10 @@ pub async fn get_url(
 /// if possible, a short `URL`.
 pub async fn post_url(
     headers: HeaderMap,
-    Host(hostname): Host, // See note below
+    Host(hostname): Host, // See note below ↓↓
     State(state): State<Arc<RwLock<AppState>>>,
     Form(form_data): Form<FormData>,
 ) -> impl IntoResponse {
-    // println!("{hostname}");
-    // println!("{:?}", headers["x-timezone"]);
     // Check if the provided URL is valid
     if Url::parse(&form_data.url).is_ok() {
         // Generate url random part
@@ -58,10 +77,14 @@ pub async fn post_url(
                     result.created_at,
                 ),
             }),
-            Err(err) => HtmlTemplate(ResultTemplate {
-                url: format!("Something went wrong: {}", err),
-                datetime: String::default(),
-            }),
+            Err(err) => {
+                tracing::error!(%err, "request failed");
+
+                return HtmlTemplate(ResultTemplate {
+                    url: format!("Something went wrong: {}", err),
+                    datetime: String::default(),
+                });
+            }
         }
     } else {
         HtmlTemplate(ResultTemplate {
@@ -71,17 +94,11 @@ pub async fn post_url(
     }
 }
 
-/// Handler 404 Error.
-pub async fn handler_404() -> impl IntoResponse {
-    HtmlTemplate(ErrTemplate {
-        title: "Error 404".to_string(),
-    })
-}
-
 #[derive(Template)]
 #[template(path = "404.html")]
 struct ErrTemplate {
     title: String,
+    reason: String,
 }
 
 /// Handler to serve the application template.
@@ -131,8 +148,20 @@ where
     }
 }
 
-/* IMPORTANT!! IN AXUM, THE LAST ARGUMENT CANNOT IMPLEMENT `FromRequestParts`. SEE:
+/* IMPORTANT!! REGARDING IMPL INTORESPONSE. SEE:
+https://docs.rs/axum/latest/axum/response/index.html#regarding-impl-intoresponse
+*/
+
+/* IMPORTANT!! A MORE APPROPRIATE WAY TO HANDLE ERRORS. SEE:
+https://github.com/tokio-rs/axum/discussions/2446
+https://github.com/tokio-rs/axum/blob/main/examples/reqwest-response/src/main.rs
+https://docs.rs/axum/latest/axum/error_handling/index.html
+*/
+
+/* IMPORTANT!! IN AXUM, THE LAST EXTRACTOR OF A HANDLER CANNOT IMPLEMENT `FromRequestParts`. SEE:
+https://docs.rs/axum/latest/axum/extract/index.html#the-order-of-extractors
 https://docs.rs/axum/latest/axum/handler/trait.Handler.html#debugging-handler-type-errors
+https://docs.rs/axum-macros/latest/axum_macros/attr.debug_handler.html
 https://docs.rs/axum/latest/axum/extract/trait.FromRequestParts.html
 
 https://stackoverflow.com/questions/76307624/unexplained-trait-bound-no-longer-satisfied-when-modifying-axum-handler-body
