@@ -1,3 +1,5 @@
 /target
 .pgdata/
 tailwind/node_modules
+
+assets/css/main.css

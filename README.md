@@ -74,6 +74,12 @@ You will also need to have the `sqlx` CLI installed (`sqlx-cli`, install it with
 $ sqlx migrate run # sqlx migrate revert (to reverse the migration)
 ```
 
+Before compiling the binary, you will have to regenerate the CSS. To do this, go to the `tailwind` folder and run the following (you must have `Node.js` installed):
+
+```
+$ cd tailwind && npm run build-css-prod
+```
+
 Build the binary file and run it with the command:
 
 ```
