@@ -40,9 +40,9 @@ In the implementation of this application we have used the following technologie
 
 <div align="center">
 
-###### Home page showing the shortened URL and the indicator that it has been copied to the clipboard & 404 error handling:
+###### Home page showing button to copy shortened URL and loading indicator & error handling pages:
 
-<img src="assets/img/screenshot-01.png" width="35%" align="top">&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/img/screenshot-02.png" width="35%">
+<img src="assets/img/screenshot-01.png" width="30%" align="top">&nbsp;&nbsp;<img src="assets/img/screenshot-02.png" width="30%" align="top">&nbsp;&nbsp;<img src="assets/img/screenshot-03.png" width="30%" align="top">
 
 </div>
 

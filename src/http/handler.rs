@@ -49,11 +49,18 @@ pub async fn get_url(
             // to indicate the failure.
             tracing::error!(%err, "request failed");
 
-            return HtmlTemplate(ErrTemplate {
-                title: "Error 404".to_string(),
-                reason: err.to_string(),
-            })
-            .into_response();
+            match err.to_string().contains("timed") {
+                true => HtmlTemplate(ErrTemplate {
+                    title: "Error 500".to_string(),
+                    reason: err.to_string(),
+                })
+                .into_response(),
+                false => HtmlTemplate(ErrTemplate {
+                    title: "Error 404".to_string(),
+                    reason: err.to_string(),
+                })
+                .into_response(),
+            }
         }
     }
 }
@@ -95,7 +102,7 @@ pub async fn post_url(
 }
 
 #[derive(Template)]
-#[template(path = "404.html")]
+#[template(path = "error-page.html")]
 struct ErrTemplate {
     title: String,
     reason: String,

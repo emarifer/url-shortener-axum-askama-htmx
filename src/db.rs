@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 const SET_TIMEOUT_DB_CONN: u64 = 5;
+const MAX_CONNECTIONS: u32 = 50;
 
 /// Create a new `PgPoolOptions` instance and set the
 /// maximum number of connections in the connection pool to 50.
@@ -11,7 +12,7 @@ pub async fn connect(db_url: &str) -> Result<Pool<Postgres>> {
     let db = PgPoolOptions::new()
         // See note below ↓↓
         .acquire_timeout(Duration::from_secs(SET_TIMEOUT_DB_CONN))
-        .max_connections(50)
+        .max_connections(MAX_CONNECTIONS)
         .connect(db_url)
         .await
         .context("Error: 🔥 unable to connect to database!")?;

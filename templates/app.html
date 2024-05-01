@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-center text-2xl font-bold text-primary mt-24 mb-12">
+<h1 class="text-center text-2xl font-bold text-primary mt-24 mb-2">
     Rust URL Shortener App
 </h1>
+
+<img src="/assets/img/rust_ferris_logo.svg" alt="Ferris Logo" class="block w-16 mx-auto mb-6">
 
 <form hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}" hx-post="/"
     hx-indicator="#spinner" hx-target="#shortened-url" hx-swap="innerHtml" hx-on::after-request="this.reset()"
